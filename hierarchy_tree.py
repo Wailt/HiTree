@@ -4,8 +4,8 @@ from pattern import delete_some_field, get_features
 
 def tree_stats(tree):
     stat = tree.counts().replace('\t', '')
-    total_depth = max([line.split(': ')[-1][:-1] for line in stat.split('\n')])
-    total_width = max([line.split(': ')[1].split(" ")[0] for line in stat.split('\n')])
+    total_depth = max([int(line.split(': ')[1].split(';')[0]) for line in stat.split('\n')])
+    total_width = max([int(line.split(': ')[2].split(";")[0][:-1]) for line in stat.split('\n')])
 
     return 'depth: ', total_depth, 'width: ', total_width
 
