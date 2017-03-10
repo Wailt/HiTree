@@ -29,7 +29,6 @@ class ClusterTree:
             s = s + str(i) + "\n"
         return s[:-1]
 
-
     def counts(self):
         s = "\t" * self.deep + 'children: ' + str(len(self.child)) + "; deep: " + str(self.deep) + ",\n"
         for i in self.child:
@@ -37,7 +36,7 @@ class ClusterTree:
         return s[:-1]
 
     def stats(self):
-        return tree
+        return tree_stats(self)
 
     def in_child(self, event):
         for ch in self.child:
@@ -78,7 +77,7 @@ class ClusterTree:
             else:
                 return self.address+[0]
         else:
-            self.child.append(ClusterTree(event, deep=self.deep + 1, sim_level=self.sim_level))
+            self.child.append(ClusterTree(event, deep=self.deep + 1, sim_level=self.sim_level if self.deep <=1 else 0.5))
             return [len(self.child) - 1, 0]
 
     def update(self, event):
