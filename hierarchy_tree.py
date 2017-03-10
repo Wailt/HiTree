@@ -38,13 +38,9 @@ class ClusterTree:
     def stats(self):
         return tree_stats(self)
 
-    def in_child(self, event):
-        for ch in self.child:
-            if self.sim(ch.event, event) > self.sim_level - 10e-3:
-                return True
-        return False
-
     def get_sim_child(self, event):
+        if  len(self.child) == 0:
+            return None
         valmax = self.sim(self.child[0].event, event)
         argmax = self.child[0]
         argn = 0
@@ -55,17 +51,15 @@ class ClusterTree:
                 argmax = ch
                 argn = n
             n += 1
-        return {"argmax": argmax, "address": argn}
+        return {"argmax": argmax, "address": argn} if valmax > self.sim_level - 10e-3 else None
 
     def filtered_update(self, event):
         event = set(event)
-        if self.in_child(event):
-            ch = self.get_sim_child(event)
+        ch = self.get_sim_child(event)
+        if ch:
             child = ch['argmax']
-            event = set(event)
             minus = event & set(child.event)
             child.event = list(minus)
-
             self.address = [ch['address'], ]
             if len(event-minus) > 0:
 #                 if not child.updated:
