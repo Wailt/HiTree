@@ -2,6 +2,8 @@ from collections import Counter
 
 from pattern import delete_some_field, get_features
 
+from copy import copy
+
 def tree_stats(tree):
     stat = tree.counts().replace('\t', '')
     total_depth = max([int(line.split(': ')[1].split(';')[0]) for line in stat.split('\n')])
@@ -17,14 +19,13 @@ class ClusterTree:
         self.child = []
         self.deep = deep
         self.updated = event == ["root"]
-        self.count = 1
         self.sim_level = sim_level
         self.fields = fields
         self.address = [0, ]
         self.updated = False
 
     def __str__(self):
-        s = "\t" * self.deep + str(self.event) + ":deep = " + str(self.deep) + ",count:" + str(self.count) + ",\n"
+        s = "\t" * self.deep + str(self.event) + ":deep = " + str(self.deep) + ",\n"
         for i in self.child:
             s = s + str(i) + "\n"
         return s[:-1]
@@ -39,7 +40,7 @@ class ClusterTree:
         return tree_stats(self)
 
     def get_sim_child(self, event):
-        if  len(self.child) == 0:
+        if len(self.child) == 0:
             return None
         else:
             sims = [self.sim(ch.event, event) for ch in self.child]
@@ -69,7 +70,7 @@ class ClusterTree:
             return [len(self.child) - 1, 0]
 
     def update(self, event):
-        event_copy = {k:event[k] for k in event}
+        event_copy = copy(event)#{k:event[k] for k in event}
         if event:
             delete_some_field(event_copy)
             event = tuple(sorted(get_features(event_copy)))
