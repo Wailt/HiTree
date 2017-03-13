@@ -1,8 +1,8 @@
 from collections import Counter
+from copy import copy
 
 from pattern import delete_some_field, get_features
 
-from copy import copy
 
 def tree_stats(tree):
     stat = tree.counts().replace('\t', '')
@@ -14,7 +14,7 @@ def tree_stats(tree):
 
 class ClusterTree:
     def __init__(self, event=["root"], deep=0, sim_level=0.01, fields=[]):
-        self.prepocessed_events=dict()
+        self.prepocessed_events = dict()
         self.event = list(set(event))
         self.child = []
         self.deep = deep
@@ -33,7 +33,7 @@ class ClusterTree:
     def counts(self):
         s = "\t" * self.deep + 'children: ' + str(len(self.child)) + "; deep: " + str(self.deep) + ",\n"
         for i in self.child:
-            s = s  + str(i.counts()) + "\n"
+            s = s + str(i.counts()) + "\n"
         return s[:-1]
 
     def stats(self):
@@ -56,28 +56,29 @@ class ClusterTree:
             minus = event & set(child.event)
             child.event = list(minus)
             self.address = [ch['address'], ]
-            if len(event-minus) > 0:
-#                 if not child.updated:
-#                     child.filtered_update(set(child.event) - minus)
-#                     child.event = set(minus)
-#                     child.updated = True
-                y = child.filtered_update(event-minus)
+            if len(event - minus) > 0:
+                # if not child.updated:
+                #     child.filtered_update(set(child.event) - minus)
+                #     child.event = set(minus)
+                #     child.updated = True
+                y = child.filtered_update(event - minus)
                 return self.address + list(y)
             else:
-                return self.address+[0]
+                return self.address + [0]
         else:
-            self.child.append(ClusterTree(event, deep=self.deep + 1, sim_level=self.sim_level if self.deep <=1 else 0.5))
+            self.child.append(
+                ClusterTree(event, deep=self.deep + 1, sim_level=self.sim_level if self.deep <= 1 else 0.5))
             return [len(self.child) - 1, 0]
 
     def update(self, event):
-        event_copy = copy(event)#{k:event[k] for k in event}
+        event_copy = copy(event)
         if event:
             delete_some_field(event_copy)
             event = tuple(sorted(get_features(event_copy)))
             if event not in self.prepocessed_events:
                 self.updated = True
                 stamp = self.filtered_update(event)
-                self.prepocessed_events[event]=stamp
+                self.prepocessed_events[event] = stamp
             return self.prepocessed_events[event]
         else:
             return str([-1, ])
