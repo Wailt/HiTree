@@ -1,25 +1,31 @@
 from collections import Counter
 from copy import copy
 
-from pattern import delete_some_field, get_features
-
 
 def tree_stats(tree):
     stat = tree.counts().replace('\t', '')
     total_depth = max([int(line.split(': ')[1].split(';')[0]) for line in stat.split('\n')])
     total_width = max([int(line.split(': ')[2].split(";")[0][:-1]) for line in stat.split('\n')])
-
     return 'depth: ', total_depth, 'width: ', total_width
 
 
+def get_features(event):
+    features = []
+    for key, val in event.iteritems():
+        features.append(str(key) + "$" + str(val))
+    return features
+
+
 class ClusterTree:
-    def __init__(self, event=["root"], deep=0, sim_level=0.01, fields=[]):
+    def __init__(self, event=("root",), deep=0, sim_level=0.01, fields=[]):
         self.prepocessed_events = dict()
         self.event = list(set(event))
         self.child = []
         self.deep = deep
         self.updated = event == ["root"]
         self.sim_level = sim_level
+
+        ## fields - list of primal keys
         self.fields = fields
         self.address = [0, ]
         self.updated = False
