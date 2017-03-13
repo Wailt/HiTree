@@ -75,7 +75,6 @@ class ClusterTree:
     def update(self, event):
         event_copy = copy(event)
         if event:
-            delete_some_field(event_copy)
             event = tuple(sorted(get_features(event_copy)))
             if event not in self.prepocessed_events:
                 self.updated = True
